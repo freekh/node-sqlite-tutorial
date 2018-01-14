@@ -1,0 +1,4 @@
+# This file contains entries of files & directories that we do not want to keep in Git (share with others)
+node_modules
+.db.file
+yarn-error.log

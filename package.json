@@ -1,0 +1,23 @@
+{
+  "name": "node-sqlite-tutorial",
+  "version": "1.0.0",
+  "author": {
+    "name": "Fredrik Ekholdt"
+  },
+  "description": "Made for Emil",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "watch": "nodemon backend/index.js -w frontend -w backend -e js,html",
+    "test-watch": "nodemon -x 'yarn test' -w frontend -w backend -w test -e js,html",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "sqlite3": "^3.1.13"
+  },
+  "devDependencies": {
+    "mocha": "^4.1.0"
+  }
+}
