@@ -3,7 +3,9 @@ const status = document.getElementById('status');
 const content = document.getElementById('content');
 const listOfLinks = document.getElementById('links');
 
-const pathnameParts = location.pathname.split('/'); // this splits the pathname (/documents/username/1) into an array of 4: first is empty, seconds: documents, then: username, then: id
+ // this splits the pathname (which is always of the form: /documents/username/1) into an array of 4:
+ // first is empty, second will always be 'documents', then the username that we have, then the actual id of the document
+const pathnameParts = location.pathname.split('/');
 const name = pathnameParts[2];
 const id = pathnameParts[3];
 
@@ -22,10 +24,10 @@ window.onload = () => {
 
   /*
    * This is sort of advanced stuff: fetch returns a Promise,
-   * and since we (or I) wanted to only do something if everything
+   * and since we (or I) wanted to only show something if _everything_
    * works, by updating the status in this case, we use Promise.all
    * that converts an Array with values of Promises to a Promise of Array with values.
-   * That's a real brain cruncher - I know. It's really useful to know about though
+   * That's a real brain cruncher - I know. It's really useful to know about though...
    */
   Promise.all([
     fetch('/api/documents/' + name + '/' + id),
@@ -40,7 +42,7 @@ window.onload = () => {
       responses.map((response) => response.json())
     );
   }).then((jsons) => {
-    const thisDoc = jsons[0]; // the first response one is this document
+    const thisDoc = jsons[0]; // the first response is the document the user is viewing
     const userDocs = jsons[1]; // the second response is all documents for this user
 
     content.value = thisDoc.content;

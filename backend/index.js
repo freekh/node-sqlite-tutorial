@@ -5,20 +5,12 @@ const bodyParser = require('body-parser');
 
 const {
   init,
-  clear,
-  drop,
-  // user:
   createUser,
   getUser,
-  getUsers,
-  deleteUser,
-  // document:
   createDocument,
-  createDocumentWithId,
   getDocument,
-  getDocumentsForUser,
+  getDocumentIdsForUser,
   updateDocument,
-  deleteDocument,
 } = require('./db');
 
 const port = 3000;
@@ -58,17 +50,17 @@ app.post('/login', parseUrlencoded, async (req, res) => {
   res.redirect(`/documents/${ name }`);
 });
 
-app.get('/documents/:name/:id', (req, res) => {
-  res.sendFile(path.join(frontendDir, 'index.html'));
-});
-
-app.post('/documents/:name/:id', async (req, res) => {
+app.get('/documents/:name', async (req, res) => {
   const { name } = req.params;
   const document = await createDocument(name);
   res.redirect(`/documents/${name}/${document.id}`);
 });
 
-app.get('/documents/:name', async (req, res) => {
+app.get('/documents/:name/:id', (req, res) => {
+  res.sendFile(path.join(frontendDir, 'index.html'));
+});
+
+app.post('/documents/:name/:id', async (req, res) => {
   const { name } = req.params;
   const document = await createDocument(name);
   res.redirect(`/documents/${name}/${document.id}`);
@@ -84,16 +76,9 @@ app.get('/api/documents/:name/:id', async (req, res) => {
 app.post('/api/documents/:name/:id', parseText, async (req, res) => {
   const { name, id } = req.params;
   const content = req.body;
-  const user = await getUser(name);
-  if (!user) {
-    return res.sendStatus(403);
-  }
-  const document = await getDocument(id, user.name);
-  if (!document) {
-    return res.sendStatus(403);
-  }
   try {
-    res.json(await updateDocument(document.id, user.name, content));
+    // this will fail if user did not exist / document is not owned
+    res.json(await updateDocument(id, name, content));
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -103,8 +88,11 @@ app.post('/api/documents/:name/:id', parseText, async (req, res) => {
 app.get('/api/documents/:name', parseText, async (req, res) => {
   const { name } = req.params;
   // we could paginate here, but that's left as an excerise for the reader
-  res.json(await getDocumentsForUser(name));
+  res.json(await getDocumentIdsForUser(name));
 });
+
+// You would have to implement app.delete('/api/documents/:name/:id')
+// using deleteDocument (from db.js) to have document deletion.
 
 // INIT
 
