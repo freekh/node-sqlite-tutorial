@@ -88,7 +88,7 @@ app.post('/api/documents/:name/:id', parseText, async (req, res) => {
   if (!user) {
     return res.sendStatus(403);
   }
-  let document = await getDocument(id, user.name);
+  const document = await getDocument(id, user.name);
   if (!document) {
     return res.sendStatus(403);
   }
