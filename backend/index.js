@@ -24,7 +24,7 @@ const {
 const port = 3000;
 const app = express();
 const parseText = bodyParser.text();
-const parseUrlencoded = bodyParser.urlencoded();
+const parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 const rootDir = __dirname; // this is different in Node where we have access to files (which a browser does not - at least not directly)
 const frontendDir = path.join(rootDir, '..', 'frontend');
@@ -101,6 +101,12 @@ app.post('/api/documents/:name/:id', parseText, async (req, res) => {
     console.error(err);
     res.sendStatus(500);
   }
+});
+
+app.get('/api/documents/:name', parseText, async (req, res) => {
+  const { name } = req.params;
+  // we could paginate here, but that's left as an excerise for the reader
+  res.json(await getDocumentsForUser(name));
 });
 
 // INIT
