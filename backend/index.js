@@ -108,8 +108,10 @@ app.get('/api/documents/:name', parseText, async (req, res) => {
 
 // INIT
 
-init(); // init DB
+// DB
+init();
 
+// Web app
 app.listen(port, async () => {
   console.log('Listening on port ' + port)
 });
