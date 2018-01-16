@@ -90,7 +90,7 @@ app.post('/api/documents/:name/:id', parseText, async (req, res) => {
   }
   let document = await getDocument(id, user.name);
   if (!document) {
-    document = await createDocument(id, user.name);
+    return res.sendStatus(403);
   }
   try {
     res.json(await updateDocument(document.id, user.name, content));
