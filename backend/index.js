@@ -47,6 +47,17 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(frontendDir, 'login.html'));
 });
 
+app.post('/login', parseUrlencoded, async (req, res) => {
+  const name = req.body.name;
+  // Ingrid Espelid style (yes: norwegian reference)...
+  // here we cheat a bit by creating unknown users and avoid the whole signup thing...
+  const user = await getUser(name);
+  if (!user) {
+    await createUser(name);
+  }
+  res.redirect(`/documents/${ name }`);
+});
+
 app.get('/documents/:name/:id', (req, res) => {
   res.sendFile(path.join(frontendDir, 'index.html'));
 });
@@ -61,20 +72,6 @@ app.get('/documents/:name', async (req, res) => {
   const { name } = req.params;
   const document = await createDocument(name);
   res.redirect(`/documents/${name}/${document.id}`);
-});
-
-app.post('/login', parseUrlencoded, async (req, res) => {
-  const name = req.body.name;
-  if (name === 'login') { // we have to check for this (and probably for other stuff but I'll leave that up to an exercise for the reader...)
-    res.status(500).send('Ooops - cant have that name');
-  }
-  // Ingrid Espelid style (yes: norwegian reference)...
-  // here we cheat a bit by creating unknown users and avoid the whole signup thing...
-  const user = await getUser(name);
-  if (!user) {
-    await createUser(name);
-  }
-  res.redirect(`/documents/${ name }`);
 });
 
 // API
@@ -111,13 +108,8 @@ app.get('/api/documents/:name', parseText, async (req, res) => {
 
 // INIT
 
-const initApp = async () => {
-  init();
-};
+init(); // init DB
 
-initApp().then(() => {
-  app.listen(port, async () => {
-    console.log('Listening on port ' + port)
-  });
+app.listen(port, async () => {
+  console.log('Listening on port ' + port)
 });
-// A note on the filename: 
