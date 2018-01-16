@@ -1,1 +1,32 @@
-/* here you could do some styling :) */
+body {
+  background-color: #faf9f4;
+  font-family: arial;
+  margin: 0;
+}
+button {
+  background-color: transparent;
+  border-color: #17d2a2;
+  font-size: 20px;
+  height: 50px;
+  width: 200px;
+  margin: 5px;
+  border-style: solid;
+  outline: none;
+}
+textarea {
+  width: 80vw;
+  background-color: #efede5;
+  border: none;
+  resize: none;
+  outline: none;
+  font-size: 20px;
+  min-height: 40vh;
+}
+#text {
+  text-align: center;
+}
+button:hover {
+  cursor: pointer;
+  background-color: #17d2a2;
+  color: white;
+}
