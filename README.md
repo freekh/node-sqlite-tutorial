@@ -284,9 +284,12 @@ const aStatusPromise = fetch('https://jsonplaceholder.typicode.com')
   });
 ```
 
-Another funnish fact: most sensible other languages have promises, and most have a `map` that does the same as `then` because it essentially does the same thing as `map`.
+### TODO: returning Promises, another section on async/await
 
 To create a Promise we have to apply everything we learnt so far and learn about another fun function that's built into JS: `setTimeout`.
+
+### TODO: move up!
+
 `setTimeout` basically takes a callback and runs it after a certain time in milliseconds. For example:
 ```JS
 setTimeout(() => {

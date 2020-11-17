@@ -5,6 +5,10 @@ const db = new sqlite3.Database('./.db.file'); // we could return this on init -
 const init = () => {
   db.serialize(() => {
     db.run('CREATE TABLE IF NOT EXISTS users(name TEXT PRIMARY KEY)');
+    // In this tutorial: we'll be using the document id in our app even if it is user facing,
+    // but it would be better to use UUIDs for it instead.
+    // The id is an implementation detail that makes it possible for any user to know how many
+    // documents there are in total.
     db.run('CREATE TABLE IF NOT EXISTS documents(id INTEGER PRIMARY KEY, content TEXT DEFAULT "", user TEXT, FOREIGN KEY(user) REFERENCES users(name))');
   });
 };
@@ -46,7 +50,7 @@ const get = (stmt, param) => new Promise((resolve, reject) => {
 
 const update = (stmt, param) => new Promise((resolve, reject) => 
   db.prepare(stmt)
-    .run(param, function() { // notice the signature of the callback of run here! we have to get the this, thus we have to use a function
+    .run(param, function() { // notice the signature of the callback of run here! we have to use the 'this', thus we have to use a function
     if (this.changes) {
       resolve(this);
     } else {
@@ -56,6 +60,7 @@ const update = (stmt, param) => new Promise((resolve, reject) =>
 );
 
 // CRUD: create, read (get), update, delete
+
 // User
 const createUser = async (name) => {
   await update('INSERT INTO users VALUES (?)', name);
@@ -82,30 +87,24 @@ const createDocument = async (user) => {
   };
 };
 
-const createDocumentWithId = async (user, id) => {
-  const { lastID } = await update('INSERT INTO documents(user, id) VALUES (?, ?)', [ user, id ]);
-  return {
-    id: lastID,
-    content: '',
-    user,
-  };
-};
-
 const getDocument = (id, user) =>
   get('SELECT * FROM documents WHERE id = ? AND user = ?', [ id, user ]);
 
 const updateDocument = (id, user, content) =>
   update('UPDATE documents SET content = ? WHERE id = ? AND user = ?', [ content, id, user ]);
 
-const getDocumentsForUser = (user) =>
-  all('SELECT * FROM documents WHERE user = ?', user);
+// We only get the document ids here - getting all documents and all the content could make the
+// application really slow.
+// Things like this is why it is important to know what you are doing :)
+const getDocumentIdsForUser = (user) =>
+  all('SELECT id FROM documents WHERE user = ?', user); // you can use LIMIT to paginate
 
 const deleteDocument = (id) =>
   update('DELETE FROM documents WHERE id = ?', id);
 
-// note: it is possible to have functions here that we do not export
+// Note: it is possible to have functions here that we do NOT export
 module.exports = {
-  init, // same as init: init
+  init, // this is the same as init: init
   clear,
   drop,
   // user:
@@ -115,9 +114,8 @@ module.exports = {
   deleteUser,
   // document:
   createDocument,
-  createDocumentWithId,
   getDocument,
-  getDocumentsForUser,
+  getDocumentIdsForUser,
   updateDocument,
   deleteDocument,
 };
